@@ -1,15 +1,16 @@
 //! CNG private keys.
-use winapi::um::ncrypt;
+
+use windows::Win32::Security::Cryptography;
 
 /// A CNG handle to a key.
-pub struct NcryptKey(ncrypt::NCRYPT_KEY_HANDLE);
+pub struct NcryptKey(Cryptography::NCRYPT_KEY_HANDLE);
 
 impl Drop for NcryptKey {
     fn drop(&mut self) {
         unsafe {
-            ncrypt::NCryptFreeObject(self.0);
+            let _ = Cryptography::NCryptFreeObject(Cryptography::NCRYPT_HANDLE(self.0 .0));
         }
     }
 }
 
-inner!(NcryptKey, ncrypt::NCRYPT_KEY_HANDLE);
+inner_newtype!(NcryptKey, Cryptography::NCRYPT_KEY_HANDLE);

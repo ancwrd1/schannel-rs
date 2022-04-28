@@ -1,13 +1,14 @@
-use winapi::shared::sspi;
 use std::ops::Deref;
 use std::slice;
 
-pub struct ContextBuffer(pub sspi::SecBuffer);
+use windows::Win32::Security::Authentication::Identity;
+
+pub struct ContextBuffer(pub Identity::SecBuffer);
 
 impl Drop for ContextBuffer {
     fn drop(&mut self) {
         unsafe {
-            sspi::FreeContextBuffer(self.0.pvBuffer);
+            let _ = Identity::FreeContextBuffer(self.0.pvBuffer);
         }
     }
 }
